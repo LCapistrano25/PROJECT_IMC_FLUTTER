@@ -2,27 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:core_project/utils/language.dart';
 import 'package:flutter/services.dart';
 import 'package:core_project/widgets/custom_input.dart';
+import 'package:core_project/screens/results/result.dart';
 
-class FormInput extends StatefulWidget {
-  const FormInput({Key? key}) : super(key: key);
-
-  @override
-  _FormInputState createState() => _FormInputState();
-}
-
-class _FormInputState extends State<FormInput> {
+class FormInput extends StatelessWidget {
   final TextEditingController num1Controller = TextEditingController();
   final TextEditingController num2Controller = TextEditingController();
-  double resultado = 0;
 
-  void somarNumeros() {
-    double num1 = double.tryParse(num1Controller.text) ?? 0;
-    double num2 = double.tryParse(num2Controller.text) ?? 0;
-    setState(() {
-      resultado = num1/num2;
-    });
+  FormInput({Key? key}) : super(key: key);
+
+  double calcularResultado() {
+    try{
+      double num1 = double.tryParse(num1Controller.text) ?? 0;
+      double num2 = double.tryParse(num2Controller.text) ?? 0;
+      return num2 != 0 ? num1 / (num2*num2) : 0;
+    } catch (e) {
+      return 0; // Handle the error by returning a default value
+    }
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -43,21 +39,17 @@ class _FormInputState extends State<FormInput> {
         SizedBox(height: 15),
         ElevatedButton(
           onPressed: () {
-            somarNumeros();
+            double resultado = calcularResultado();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Result(result: resultado,)),
+            );
           },
           child: Text(
             getLanguage(context)[3],
             style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
-        ),
-
-        SizedBox(height: 15),
-
-        Text(
-          getLanguage(context)[4] + " " + resultado.toString(),
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 15),
+        )
       ],
     );
   }
